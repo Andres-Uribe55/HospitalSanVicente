@@ -1,0 +1,90 @@
+@model HospitalSanVicente.Models.Patient
+
+@{
+    ViewData["Title"] = "Registrar nuevo paciente";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="row align-content-center">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Registrar nuevo paciente</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" asp-controller="Patients" method="post" enctype="multipart/form-data">
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="FirstName" class="form-label">Nombres</label>
+                        <input asp-for="FirstName" class="form-control" placeholder="Ingrese los nombres del afiliado" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="LastName" class="form-label">Apellidos</label>
+                        <input asp-for="LastName" class="form-control" placeholder="Ingrese los apellidos" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DocumentType" class="form-label">Tipo de documento</label>
+                        <select asp-for="DocumentType" class="form-select">
+                            <option value="">Seleccione un tipo</option>
+                            <option value="CC">Cédula de ciudadanía</option>
+                            <option value="CE">Cédula de extranjería</option>
+                            <option value="TI">Tarjeta de identidad</option>
+                            <option value="Pasaporte">Pasaporte</option>
+                        </select>
+                        <span asp-validation-for="DocumentType" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="DocumentNumber" class="form-label">Número de documento</label>
+                        <input asp-for="DocumentNumber" class="form-control @(ViewData.ModelState["DocumentNumber"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Ejemplo: 1234567890" id="documentNumber" />
+                        <span asp-validation-for="DocumentNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BirthDate" class="control-label">Fecha de nacimiento</label>
+                        <input asp-for="BirthDate" class="form-control" type="date" />
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label">Correo electrónico</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="ejemplo@correo.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Phone" class="form-label">Teléfono</label>
+                        <input asp-for="Phone" class="form-control" placeholder="Ejemplo: 3001234567" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                    <button class="btn btn-primary w-100">Guardar Info</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+@if (TempData["error"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '@TempData["error"]',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+}

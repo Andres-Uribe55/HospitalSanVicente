@@ -1,0 +1,135 @@
+@model IEnumerable<HospitalSanVicente.Models.Patient>
+@{
+    ViewData["Title"] = "Gestión de Pacientes";
+    var showingActive = ViewBag.ShowingActive ?? true;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@Html.AntiForgeryToken()
+
+<div class="row align-content-center">
+    <h1>@(showingActive ? "Pacientes Activos" : "Pacientes Inactivos")</h1>
+    <div class="row mb-3">
+        <div class="col-md-10 mx-auto text-end">
+            @if (showingActive)
+            {
+                <a asp-controller="Patients" asp-action="Create" class="btn btn-success shadow-sm">
+                    <i class="bi bi-person-plus-fill"></i> Registrar nuevo paciente
+                </a>
+                <a asp-action="Inactivos" class="btn btn-secondary">Ver inactivos</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn btn-primary">Ver activos</a>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-10 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <th>Documento</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td>@patient.FirstName @patient.LastName</td>
+                                <td> @patient.DocumentType - @patient.DocumentNumber</td>
+                                <td>@patient.Phone</td>
+                                <td>@patient.Email</td>
+                                <td>
+                                    @if (patient.IsActive)
+                                    {
+                                        <span class="badge bg-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactivo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn btn-warning btn-sm">Editar</a>
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            onclick="confirmChange(@patient.PatientId, '@(patient.IsActive ? "desactivar" : "activar")')">
+                                        @(patient.IsActive ? "Desactivar" : "Activar")
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["message"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: '@TempData["message"]',
+            timer: 2500,
+            showConfirmButton: false
+        });
+    </script>
+}
+
+@if (TempData["error"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '@TempData["error"]',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+}
+
+<script>
+    function confirmChange(id, action) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `¿Deseas ${action} este paciente?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/Patients/CambiarEstado/${id}`;
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>

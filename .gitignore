@@ -1,0 +1,20 @@
+# Archivos bin y obj
+bin/
+obj/
+
+# Configuración local de Rider
+.idea/
+
+# Archivos de usuario de Visual Studio
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Paquetes NuGet
+*.nupkg
+packages/
+
+# Archivos temporales
+*.log
+*.vs/
